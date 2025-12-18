@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <title>Copola Estética</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      /* --- DESIGN SYSTEM --- */
+      :root {
+        --neon-green: #39ff14;
+        --neon-cyan: #00e0ff;
+        --dark-bg: #050505;
+        --text-main: #ffffff;
+        --danger: #ff4444;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        background-color: var(--dark-bg);
+        background-image: radial-gradient(
+          circle at top center,
+          #1a1a1a 0%,
+          #000000 70%
+        );
+        color: var(--text-main);
+        font-family: "Montserrat", sans-serif;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      h1,
+      h2,
+      h3,
+      .brand-font {
+        font-family: "Orbitron", sans-serif;
+        letter-spacing: 1px;
+      }
+
+      /* --- LOGIN --- */
+      #login-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        z-index: 2000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+      }
+      .login-logo {
+        font-size: 32px;
+        margin-bottom: 40px;
+        text-align: center;
+      }
+      .login-logo .c {
+        color: var(--neon-cyan);
+        text-shadow: 0 0 15px rgba(0, 224, 255, 0.4);
+      }
+      .login-logo .n {
+        color: var(--neon-green);
+        text-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+      }
+
+      .inp-modern {
+        width: 100%;
+        max-width: 320px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid #333;
+        border-radius: 12px;
+        color: white;
+        font-size: 16px;
+        outline: none;
+        text-align: center;
+      }
+      .btn-glow {
+        width: 100%;
+        max-width: 320px;
+        padding: 16px;
+        background: linear-gradient(90deg, var(--neon-green), #32d912);
+        color: black;
+        font-weight: 800;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-family: "Orbitron";
+        box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+      }
+
+      /* --- APP CONTAINER --- */
+      #app-container {
+        display: none;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      header {
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        background: rgba(10, 10, 10, 0.9);
+        border-bottom: 1px solid #333;
+        flex-shrink: 0;
+      }
+      .header-brand {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .btn-logout {
+        background: none;
+        border: 1px solid #444;
+        padding: 6px 12px;
+        border-radius: 6px;
+        color: #888;
+        font-size: 12px;
+      }
+
+      .controls-wrapper {
+        padding: 15px 20px 5px 20px;
+        flex-shrink: 0;
+      }
+      .controls-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #111;
+        padding: 8px;
+        border-radius: 50px;
+        border: 1px solid #333;
+      }
+      .btn-nav {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: #222;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .date-display {
+        color: var(--neon-cyan);
+        font-weight: 600;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .scroll-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px 20px 80px 20px;
+      }
+
+      /* --- LISTA DE DIAS --- */
+      .day-container {
+        margin-bottom: 25px;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .day-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .day-header:active {
+        background-color: #222;
+      }
+      /* Cursor padrão para domingo */
+      .day-header.disabled {
+        cursor: default;
+        opacity: 0.7;
+      }
+      .day-header.disabled:active {
+        background-color: transparent;
+      }
+
+      .day-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .day-date {
+        font-size: 12px;
+        color: #666;
+        font-weight: 400;
+      }
+      .day-add-icon {
+        margin-left: auto;
+        color: var(--neon-cyan);
+        font-size: 18px;
+        font-weight: bold;
+        opacity: 0.8;
+      }
+
+      /* CARD (Clicável para editar) */
+      .card-app {
+        position: relative;
+        background: linear-gradient(145deg, #161616, #111);
+        border: 1px solid #222;
+        border-left: 3px solid var(--neon-cyan);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      .card-app:active {
+        transform: scale(0.98);
+        background: #222;
+      }
+
+      .time-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-right: 15px;
+        border-right: 1px solid #333;
+        margin-right: 15px;
+        min-width: 60px;
+      }
+      .time-val {
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        font-family: "Orbitron";
+      }
+      .time-label {
+        font-size: 9px;
+        color: #666;
+        text-transform: uppercase;
+      }
+      .info-col {
+        flex: 1;
+      }
+      .client-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+      }
+      .car-details {
+        font-size: 12px;
+        color: var(--neon-green);
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+      .obs-text {
+        font-size: 11px;
+        color: #777;
+        margin-top: 4px;
+        font-style: italic;
+      }
+
+      .btn-trash {
+        color: #444;
+        background: none;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        z-index: 10;
+      }
+      .btn-trash:active {
+        color: var(--danger);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 15px;
+        color: #444;
+        font-size: 13px;
+        font-style: italic;
+        border: 1px dashed #222;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .closed-state {
+        text-align: center;
+        padding: 10px;
+        color: var(--danger);
+        font-weight: bold;
+        background: rgba(255, 68, 68, 0.05);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 68, 68, 0.2);
+      }
+
+      /* --- MODAL --- */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+        z-index: 3000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-box {
+        background: #151515;
+        width: 90%;
+        max-width: 380px;
+        padding: 25px;
+        border-radius: 20px;
+        border: 1px solid #333;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      }
+      .modal-title {
+        text-align: center;
+        color: white;
+        font-family: "Orbitron";
+        margin-bottom: 15px;
+      }
+
+      .form-label {
+        font-size: 11px;
+        color: var(--neon-cyan);
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        display: block;
+        margin-top: 15px;
+      }
+      .form-input {
+        width: 100%;
+        padding: 12px;
+        background: #0a0a0a;
+        border: 1px solid #333;
+        border-radius: 8px;
+        color: white;
+        font-size: 14px;
+        outline: none;
+      }
+      .form-input:focus {
+        border-color: var(--neon-green);
+      }
+
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+      }
+      .btn-modal-save {
+        flex: 2;
+        padding: 12px;
+        border-radius: 8px;
+        border: none;
+        background: var(--neon-green);
+        color: black;
+        font-weight: bold;
+        font-family: "Orbitron";
+        cursor: pointer;
+      }
+      .btn-modal-cancel {
+        flex: 1;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #444;
+        background: transparent;
+        color: #888;
+        cursor: pointer;
+      }
+
+      .fab {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        background: var(--neon-green);
+        color: black;
+        font-size: 24px;
+        box-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        cursor: pointer;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="login-screen">
+      <div class="login-logo brand-font">
+        <span class="c">COPOLA</span><br /><span class="n">ESTÉTICA</span>
+      </div>
+      <input type="email" id="email" class="inp-modern" placeholder="E-mail" />
+      <input
+        type="password"
+        id="password"
+        class="inp-modern"
+        placeholder="Senha"
+      />
+      <button class="btn-glow" onclick="fazerLogin()">ACESSAR</button>
+      <div
+        id="login-feedback"
+        style="color: #ff4444; font-size: 12px; margin-top: 15px"
+      ></div>
+    </div>
+
+    <div id="app-container">
+      <header>
+        <div class="brand-font header-brand">
+          <span style="color: var(--neon-cyan)">COPOLA</span>
+          <span style="color: var(--neon-green)">AGENDA</span>
+        </div>
+        <button class="btn-logout" onclick="fazerLogout()">
+          <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+      </header>
+
+      <div class="controls-wrapper">
+        <div class="controls-bar">
+          <button class="btn-nav" onclick="mudarSemana(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="date-display" id="periodo-label">...</div>
+          <button class="btn-nav" onclick="mudarSemana(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="scroll-area" id="lista-semanal"></div>
+
+      <button class="fab" onclick="abrirModal()">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+
+    <div class="modal-overlay" id="modal-agendamento">
+      <div class="modal-box">
+        <h3 class="modal-title" id="modal-titulo">NOVO AGENDAMENTO</h3>
+
+        <div style="display: flex; gap: 10px">
+          <div style="flex: 1">
+            <label class="form-label">DATA</label>
+            <input type="date" id="inp-data" class="form-input" />
+          </div>
+          <div style="flex: 1">
+            <label class="form-label">HORA</label>
+            <select id="inp-hora" class="form-input">
+              <option value="" disabled selected>--:--</option>
+              <option value="08:00">08:00</option>
+              <option value="09:00">09:00</option>
+              <option value="10:00">10:00</option>
+              <option value="11:00">11:00</option>
+              <option value="13:00">13:00</option>
+              <option value="14:00">14:00</option>
+              <option value="15:00">15:00</option>
+              <option value="16:00">16:00</option>
+              <option value="17:00">17:00</option>
+              <option value="18:00">18:00</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="form-label">CLIENTE</label>
+        <input
+          type="text"
+          id="inp-cliente"
+          class="form-input"
+          placeholder="Nome do Cliente"
+        />
+        <label class="form-label">VEÍCULO</label>
+        <input
+          type="text"
+          id="inp-carro"
+          class="form-input"
+          placeholder="Modelo / Cor"
+        />
+        <label class="form-label">OBS</label>
+        <input
+          type="text"
+          id="inp-obs"
+          class="form-input"
+          placeholder="Serviço a realizar"
+        />
+
+        <div class="modal-actions">
+          <button class="btn-modal-cancel" onclick="fecharModal()">
+            CANCELAR
+          </button>
+          <button
+            class="btn-modal-save"
+            id="btn-salvar"
+            onclick="salvarAgenda()"
+          >
+            SALVAR
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        onValue,
+        remove,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+      import {
+        getAuth,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+      // =================================================================
+      // ⚠️ COLE SUAS CHAVES DO FIREBASE AQUI
+      // =================================================================
+      const firebaseConfig = {
+        apiKey: "AIzaSyBLFzr8BfFJxdPh5PRAPXUEAhDYxyE5H5Y",
+        authDomain: "copola-agenda.firebaseapp.com",
+        databaseURL: "https://copola-agenda-default-rtdb.firebaseio.com",
+        projectId: "copola-agenda",
+        storageBucket: "copola-agenda.firebasestorage.app",
+        messagingSenderId: "610669976792",
+        appId: "1:610669976792:web:c79ca72dff1fdd150a0bad",
+        measurementId: "G-YGNLGJVY9T",
+      };
+      // =================================================================
+
+      let app, db, auth;
+      try {
+        app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+        auth = getAuth(app);
+      } catch (e) {
+        console.error(e);
+      }
+
+      let agendamentos = [];
+      let inicioSemana = new Date();
+      inicioSemana.setDate(inicioSemana.getDate() - inicioSemana.getDay());
+
+      let idEmEdicao = null;
+
+      window.fazerLogin = () => {
+        const email = document.getElementById("email").value;
+        const senha = document.getElementById("password").value;
+        const fb = document.getElementById("login-feedback");
+        if (!email || !senha) return (fb.innerText = "Preencha os campos.");
+        fb.innerText = "Entrando...";
+        signInWithEmailAndPassword(auth, email, senha).catch(
+          (e) => (fb.innerText = "Erro no acesso.")
+        );
+      };
+      window.fazerLogout = () => signOut(auth).then(() => location.reload());
+
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          document.getElementById("login-screen").style.display = "none";
+          document.getElementById("app-container").style.display = "flex";
+          carregarDados();
+        } else {
+          document.getElementById("login-screen").style.display = "flex";
+          document.getElementById("app-container").style.display = "none";
+        }
+      });
+
+      function carregarDados() {
+        onValue(ref(db, "agendamentos"), (snapshot) => {
+          const data = snapshot.val();
+          agendamentos = data ? Object.values(data) : [];
+          renderizar();
+        });
+      }
+      window.mudarSemana = (d) => {
+        inicioSemana.setDate(inicioSemana.getDate() + d * 7);
+        renderizar();
+      };
+
+      const DIAS = [
+        "DOMINGO",
+        "SEGUNDA",
+        "TERÇA",
+        "QUARTA",
+        "QUINTA",
+        "SEXTA",
+        "SÁBADO",
+      ];
+      const MESES = [
+        "JAN",
+        "FEV",
+        "MAR",
+        "ABR",
+        "MAI",
+        "JUN",
+        "JUL",
+        "AGO",
+        "SET",
+        "OUT",
+        "NOV",
+        "DEZ",
+      ];
+
+      function renderizar() {
+        const container = document.getElementById("lista-semanal");
+        container.innerHTML = "";
+        const fimSemana = new Date(inicioSemana);
+        fimSemana.setDate(fimSemana.getDate() + 6);
+        document.getElementById(
+          "periodo-label"
+        ).innerText = `${inicioSemana.getDate()} ${
+          MESES[inicioSemana.getMonth()]
+        } - ${fimSemana.getDate()} ${MESES[fimSemana.getMonth()]}`;
+
+        for (let i = 0; i < 7; i++) {
+          const dia = new Date(inicioSemana);
+          dia.setDate(dia.getDate() + i);
+          const diaKey = dia.toISOString().split("T")[0];
+          const itens = agendamentos
+            .filter((a) => a.data === diaKey)
+            .sort((a, b) => a.hora.localeCompare(b.hora));
+          const isHoje = diaKey === new Date().toISOString().split("T")[0];
+          const isDomingo = i === 0;
+
+          const wrapper = document.createElement("div");
+          wrapper.className = "day-container";
+          let conteudo = "";
+
+          if (isDomingo) {
+            conteudo = `<div class="closed-state"><i class="fas fa-store-slash"></i> FECHADO</div>`;
+          } else if (itens.length === 0) {
+            conteudo = `<div class="empty-state">Toque aqui para agendar</div>`;
+          } else {
+            itens.forEach((item) => {
+              conteudo += `
+                        <div class="card-app" onclick="editar(${item.id})">
+                            <div class="time-col"><span class="time-val">${
+                              item.hora
+                            }</span><span class="time-label">H</span></div>
+                            <div class="info-col">
+                                <div class="client-name">${item.cliente}</div>
+                                <div class="car-details"><i class="fas fa-car"></i> ${
+                                  item.carro
+                                }</div>
+                                <div class="obs-text">${item.obs || ""}</div>
+                            </div>
+                            <button class="btn-trash" onclick="event.stopPropagation(); deletar(${
+                              item.id
+                            })"><i class="fas fa-trash-alt"></i></button>
+                        </div>`;
+            });
+          }
+
+          // LÓGICA DE CLIQUE PROTEGIDA:
+          // Se for domingo (i===0), NÃO adiciona onclick e adiciona classe 'disabled'
+          const clickHeader = isDomingo
+            ? ""
+            : `onclick="abrirModal('${diaKey}')"`;
+          const classHeader = isDomingo ? "day-header disabled" : "day-header";
+          const iconeAdd = isDomingo
+            ? ""
+            : '<span class="day-add-icon">+</span>';
+
+          // Lógica para clique no corpo vazio
+          let clickBody = "";
+          if (!isDomingo && itens.length === 0) {
+            clickBody = `onclick="abrirModal('${diaKey}')" style="cursor:pointer"`;
+          }
+
+          wrapper.innerHTML = `
+                    <div class="${classHeader}" ${clickHeader}>
+                        <span class="day-title" style="${
+                          isHoje ? "color:var(--neon-green)" : ""
+                        }">${DIAS[i]}</span>
+                        <span class="day-date">${dia.getDate()}/${
+            dia.getMonth() + 1
+          }</span>
+                        ${
+                          isHoje
+                            ? `<span style="background:var(--neon-green); color:black; font-size:9px; padding:2px 6px; border-radius:4px; font-weight:bold; margin-left:5px">HOJE</span>`
+                            : ""
+                        }
+                        ${iconeAdd}
+                    </div>
+                    <div ${clickBody}>${conteudo}</div>
+                `;
+          container.appendChild(wrapper);
+        }
+      }
+
+      window.abrirModal = (preData) => {
+        const dataHoje = new Date().toISOString().split("T")[0];
+
+        // 1. BLOQUEIO DE PASSADO E DOMINGO (Ao tentar abrir)
+        if (preData) {
+          if (preData < dataHoje)
+            return alert("Não é possível agendar em datas passadas.");
+          const d = new Date(preData + "T12:00:00"); // T12:00 evita problema de fuso
+          if (d.getDay() === 0)
+            return alert("A estética não abre aos domingos.");
+        }
+
+        idEmEdicao = null;
+        document.getElementById("modal-titulo").innerText = "NOVO AGENDAMENTO";
+        document.getElementById("btn-salvar").innerText = "SALVAR";
+
+        document.getElementById("modal-agendamento").style.display = "flex";
+
+        // Define o input data e trava dias anteriores (min)
+        const inputData = document.getElementById("inp-data");
+        inputData.value = preData || dataHoje;
+        inputData.min = dataHoje; // Impede selecionar passado no calendário nativo
+
+        document.getElementById("inp-hora").value = "";
+        limparForm();
+      };
+
+      window.editar = (id) => {
+        const item = agendamentos.find((a) => a.id === id);
+        if (!item) return;
+
+        // Bloqueia edição de itens passados se quiser (opcional)
+        // if(item.data < new Date().toISOString().split('T')[0]) return alert("Não é possível editar agendamentos passados.");
+
+        idEmEdicao = id;
+        document.getElementById("modal-titulo").innerText =
+          "EDITAR AGENDAMENTO";
+        document.getElementById("btn-salvar").innerText = "ATUALIZAR";
+        document.getElementById("modal-agendamento").style.display = "flex";
+
+        const inputData = document.getElementById("inp-data");
+        inputData.value = item.data;
+        inputData.min = new Date().toISOString().split("T")[0]; // Trava passado no edit também
+
+        document.getElementById("inp-hora").value = item.hora;
+        document.getElementById("inp-cliente").value = item.cliente;
+        document.getElementById("inp-carro").value = item.carro;
+        document.getElementById("inp-obs").value = item.obs || "";
+      };
+
+      window.fecharModal = () => {
+        document.getElementById("modal-agendamento").style.display = "none";
+        limparForm();
+        idEmEdicao = null;
+      };
+
+      window.salvarAgenda = () => {
+        const data = document.getElementById("inp-data").value;
+        const hora = document.getElementById("inp-hora").value;
+        const cliente = document.getElementById("inp-cliente").value;
+        const carro = document.getElementById("inp-carro").value;
+        const obs = document.getElementById("inp-obs").value;
+
+        if (!data || !hora || !cliente)
+          return alert("Preencha data, hora e cliente.");
+
+        // 2. VALIDAÇÃO DE SEGURANÇA NO SALVAR
+        const hoje = new Date().toISOString().split("T")[0];
+        if (data < hoje) return alert("Erro: Data selecionada já passou!");
+
+        const dataObj = new Date(data + "T12:00:00");
+        if (dataObj.getDay() === 0)
+          return alert("Erro: Não agendamos aos domingos!");
+
+        // Verifica conflito
+        const conflito = agendamentos.find(
+          (a) => a.data === data && a.hora === hora && a.id !== idEmEdicao
+        );
+        if (conflito) return alert("Este horário já está ocupado!");
+
+        const idFinal = idEmEdicao ? idEmEdicao : Date.now();
+        set(ref(db, "agendamentos/" + idFinal), {
+          id: idFinal,
+          data,
+          hora,
+          cliente,
+          carro,
+          obs,
+        }).then(() => fecharModal());
+      };
+
+      function limparForm() {
+        document.getElementById("inp-cliente").value = "";
+        document.getElementById("inp-carro").value = "";
+        document.getElementById("inp-obs").value = "";
+      }
+
+      window.deletar = (id) => {
+        if (confirm("Confirmar exclusão?"))
+          remove(ref(db, "agendamentos/" + id));
+      };
+    </script>
+  </body>
+</html>
